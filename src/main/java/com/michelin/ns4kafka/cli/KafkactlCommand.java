@@ -23,13 +23,10 @@ import java.util.concurrent.Callable;
                         ImportSubcommand.class,
                         ConnectorsSubcommand.class
                 },
-        versionProvider = KafkactlCommand.ConfigVersionProvider.class,
         mixinStandardHelpOptions = true)
 public class KafkactlCommand implements Runnable {
 
     public static boolean VERBOSE = false;
-    @Inject
-    public ConfigVersionProvider versionProvider;
 
     @Option(names = {"-v", "--verbose"}, description = "...", scope = CommandLine.ScopeType.INHERIT)
     public void setVerbose(final boolean verbose) {
@@ -60,22 +57,8 @@ public class KafkactlCommand implements Runnable {
     public void run() {
         CommandLine cmd = new CommandLine(new KafkactlCommand());
         // Display help
-        System.out.println(versionProvider.getVersion()[0]);
         cmd.usage(System.out);
 
-    }
-
-    @Singleton
-    public static class ConfigVersionProvider implements CommandLine.IVersionProvider {
-
-        @Inject
-        public KafkactlConfig kafkactlConfig;
-        @Override
-        public String[] getVersion() {
-            return new String[]{
-                    "v" + kafkactlConfig.getVersion()
-            };
-        }
     }
 
 }
