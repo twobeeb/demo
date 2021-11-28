@@ -4,7 +4,7 @@ plugins {
 }
 
 version = "0.1"
-group = "com.example"
+group = "com.michelin"
 
 repositories {
     mavenCentral()
@@ -14,12 +14,14 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("com.example.*")
+        annotations("com.michelin.*")
     }
 }
 
 dependencies {
     annotationProcessor("info.picocli:picocli-codegen")
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+    compileOnly 'org.projectlombok:lombok:1.18.16'
     implementation("info.picocli:picocli")
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.picocli:micronaut-picocli")
@@ -27,13 +29,17 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
 
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("org.ocpsoft.prettytime:prettytime:5.0.1.Final")
+    implementation("io.github.java-diff-utils:java-diff-utils:4.9")
+
     testImplementation("io.micronaut:micronaut-http-client")
 
 }
 
 
 application {
-    mainClass.set("com.example.DemoCommand")
+    mainClass.set("com.michelin.ns4kafka.cli.KafkactlCommand")
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("11")

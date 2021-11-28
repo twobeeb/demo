@@ -1,4 +1,4 @@
-applicationType: cli
+applicationType: com.michelin.ns4kafka.cli.cli
 defaultPackage: com.example
 testFramework: junit
 sourceLanguage: java
