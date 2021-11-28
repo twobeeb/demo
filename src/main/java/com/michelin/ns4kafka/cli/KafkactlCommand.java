@@ -40,7 +40,7 @@ public class KafkactlCommand implements Runnable {
     public Optional<String> optionalNamespace;
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // There are 3 ways to configure kafkactl :
         // 1. Setup config file in $HOME/.kafkactl/config.yml
         // 2. Setup config file anywhere and set KAFKACTL_CONFIG=/path/to/config.yml
@@ -53,8 +53,8 @@ public class KafkactlCommand implements Runnable {
             System.setProperty("micronaut.config.files", System.getenv("KAFKACTL_CONFIG"));
         }*/
 
-        int exitCode = PicocliRunner.execute(KafkactlCommand.class, args);
-        System.exit(exitCode);
+        PicocliRunner.run(KafkactlCommand.class, args);
+
     }
 
     public void run() {
