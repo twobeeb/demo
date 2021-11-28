@@ -103,23 +103,16 @@ public class DiffSubcommand implements Runnable {
         List<ApiResource> apiResources = apiResourcesService.getListResourceDefinition();
 
         // 5. process each document individually, return 0 when all succeed
-        int errors = resources.stream()
-                .map(resource -> {
+        resources.stream()
+                .forEach(resource -> {
                     ApiResource apiResource = apiResources.stream()
                             .filter(apiRes -> apiRes.getKind().equals(resource.getKind()))
                             .findFirst()
                             .orElseThrow(); // already validated
                     Resource live = resourceService.getSingleResourceWithType(apiResource, namespace, resource.getMetadata().getName(), false);
                     HttpResponse<Resource> merged = resourceService.apply(apiResource, namespace, resource, true);
-                    if (merged != null) {
-                        List<String> uDiff = unifiedDiff(live, merged.body());
-                        uDiff.forEach(System.out::println);
-                        return 0;
-                    }
-                    return 1;
-                })
-                .mapToInt(Integer::valueOf)
-                .sum();
+
+                });
     }
 
     private List<String> unifiedDiff(Resource live, Resource merged) {
