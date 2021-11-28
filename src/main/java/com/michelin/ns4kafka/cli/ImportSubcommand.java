@@ -50,7 +50,7 @@ public class ImportSubcommand implements Runnable {
         // 1. Authent
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
+            throw new UnsupportedOperationException( "Login failed");
         }
 
         // 2. validate resourceType + custom type ALL
@@ -76,10 +76,10 @@ public class ImportSubcommand implements Runnable {
         // otherwise check resource exists
         Optional<ApiResource> optionalApiResource = apiResourcesService.getResourceDefinitionFromCommandName(resourceType);
         if (optionalApiResource.isEmpty()) {
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "The server doesn't have resource type " + resourceType);
+            throw new UnsupportedOperationException( "The server doesn't have resource type " + resourceType);
         }
         if(!optionalApiResource.get().isSynchronizable()){
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Resource Type " + resourceType+" is not synchronizable");
+            throw new UnsupportedOperationException( "Resource Type " + resourceType+" is not synchronizable");
         }
 
         return List.of(optionalApiResource.get());

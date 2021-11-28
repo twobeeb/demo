@@ -32,8 +32,7 @@ public class DeleteRecordsSubcommand implements Runnable {
     @Option(names = {"--dry-run"}, description = "Does not persist resources. Validate only")
     public boolean dryRun;
 
-    @CommandLine.Spec
-    public CommandLine.Model.CommandSpec commandSpec;
+    
 
     @Override
     public void run() {
@@ -42,7 +41,7 @@ public class DeleteRecordsSubcommand implements Runnable {
         }
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
+            throw new UnsupportedOperationException( "Login failed");
         }
 
         String namespace = kafkactlCommand.optionalNamespace.orElse(kafkactlConfig.getCurrentNamespace());

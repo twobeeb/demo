@@ -46,15 +46,14 @@ public class DiffSubcommand implements Runnable {
     @Option(names = {"-R", "--recursive"}, description = "Enable recursive search of file")
     public boolean recursive;
 
-    @CommandLine.Spec
-    public CommandLine.Model.CommandSpec commandSpec;
+    
 
     @Override
     public void run() {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
+            throw new UnsupportedOperationException( "Login failed");
         }
 
         // 0. Check STDIN and -f
@@ -66,7 +65,7 @@ public class DiffSubcommand implements Runnable {
         }
         // If we have none or both stdin and File set, we stop
         if (hasStdin == file.isPresent()) {
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Required one of -f or stdin");
+            throw new UnsupportedOperationException( "Required one of -f or stdin");
         }
 
         List<Resource> resources;
@@ -75,7 +74,7 @@ public class DiffSubcommand implements Runnable {
             // 1. list all files to process
             List<File> yamlFiles = fileService.computeYamlFileList(file.get(), recursive);
             if (yamlFiles.isEmpty()) {
-                throw new CommandLine.ParameterException(commandSpec.commandLine(), "Could not find yaml/yml files in " + file.get().getName());
+                throw new UnsupportedOperationException( "Could not find yaml/yml files in " + file.get().getName());
             }
             // 2 load each files
             resources = fileService.parseResourceListFromFiles(yamlFiles);
@@ -90,7 +89,7 @@ public class DiffSubcommand implements Runnable {
         List<Resource> invalidResources = apiResourcesService.validateResourceTypes(resources);
         if (!invalidResources.isEmpty()) {
             String invalid = String.join(", ", invalidResources.stream().map(Resource::getKind).distinct().collect(Collectors.toList()));
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "The server doesn't have resource type [" + invalid + "]");
+            throw new UnsupportedOperationException( "The server doesn't have resource type [" + invalid + "]");
         }
         // 4. validate namespace mismatch
         String namespace = kafkactlCommand.optionalNamespace.orElse(kafkactlConfig.getCurrentNamespace());
@@ -99,7 +98,7 @@ public class DiffSubcommand implements Runnable {
                 .collect(Collectors.toList());
         if (!nsMismatch.isEmpty()) {
             String invalid = String.join(", ", nsMismatch.stream().map(resource -> resource.getKind() + "/" + resource.getMetadata().getName()).distinct().collect(Collectors.toList()));
-            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Namespace mismatch between kafkactl and yaml document [" + invalid + "]");
+            throw new UnsupportedOperationException( "Namespace mismatch between kafkactl and yaml document [" + invalid + "]");
         }
         List<ApiResource> apiResources = apiResourcesService.getListResourceDefinition();
 
