@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 @Command(name = "kafkactl",
         subcommands =
                 {
-                        //ApplySubcommand.class,
+                        ApplySubcommand.class,
                         GetSubcommand.class,
                         DeleteSubcommand.class,
                         ApiResourcesSubcommand.class,
