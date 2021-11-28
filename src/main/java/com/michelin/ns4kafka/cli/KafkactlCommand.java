@@ -20,8 +20,8 @@ import java.util.concurrent.Callable;
                         //DiffSubcommand.class,
                         ResetOffsetsSubcommand.class,
                         DeleteRecordsSubcommand.class,
-                        ImportSubcommand.class
-                        //ConnectorsSubcommand.class
+                        ImportSubcommand.class,
+                        ConnectorsSubcommand.class
                 },
         mixinStandardHelpOptions = true)
 public class KafkactlCommand implements Runnable {
