@@ -13,15 +13,15 @@ import java.util.concurrent.Callable;
 @Command(name = "kafkactl",
         subcommands =
                 {
-                        ApplySubcommand.class,
-                        GetSubcommand.class,
-                        DeleteSubcommand.class,
-                        ApiResourcesSubcommand.class,
-                        DiffSubcommand.class,
-                        ResetOffsetsSubcommand.class,
-                        DeleteRecordsSubcommand.class,
-                        ImportSubcommand.class,
-                        ConnectorsSubcommand.class
+//                        ApplySubcommand.class,
+                        GetSubcommand.class
+//                        DeleteSubcommand.class,
+//                        ApiResourcesSubcommand.class,
+//                        DiffSubcommand.class,
+//                        ResetOffsetsSubcommand.class,
+//                        DeleteRecordsSubcommand.class,
+//                        ImportSubcommand.class,
+//                        ConnectorsSubcommand.class
                 },
         mixinStandardHelpOptions = true)
 public class KafkactlCommand implements Runnable {
