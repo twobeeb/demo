@@ -103,38 +103,28 @@ public class DiffSubcommand implements Runnable {
         List<ApiResource> apiResources = apiResourcesService.getListResourceDefinition();
 
         // 5. process each document individually, return 0 when all succeed
-        resources.stream()
-                .forEach(resource -> {
+        int errors = resources.stream()
+                .map(resource -> {
                     ApiResource apiResource = apiResources.stream()
                             .filter(apiRes -> apiRes.getKind().equals(resource.getKind()))
                             .findFirst()
                             .orElseThrow(); // already validated
-                    Resource live = resourceService.getSingleResourceWithType(apiResource, namespace, resource.getMetadata().getName(), false);
-                    HttpResponse<Resource> merged = resourceService.apply(apiResource, namespace, resource, true);
+                    HttpResponse<Resource> response = resourceService.apply(apiResource, namespace, resource, true);
+                    if (response == null) {
+                        return null;
+                    }
+                    Resource merged = response.body();
+                    String resourceState = "";
+                    if (response.header("X-Ns4kafka-Result") != null) {
+                        resourceState = " (" +response.header("X-Ns4kafka-Result") + ")";
+                    }
+                    System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold,green Success |@") + merged.getKind() + "/" + merged.getMetadata().getName() + resourceState);
 
-                });
-    }
-
-    private List<String> unifiedDiff(Resource live, Resource merged) {
-        // ignore status and timestamp for comparison
-        if (live != null) {
-            live.setStatus(null);
-            live.getMetadata().setCreationTimestamp(null);
-        }
-        merged.setStatus(null);
-        merged.getMetadata().setCreationTimestamp(null);
-
-        DumperOptions options = new DumperOptions();
-        options.setExplicitStart(true);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        Representer representer = new Representer();
-        representer.addClassTag(Resource.class, Tag.MAP);
-        Yaml yaml = new Yaml(representer, options);
-
-        List<String> oldResourceStr = live != null ? yaml.dump(live).lines().collect(Collectors.toList()) : List.of();
-        List<String> newResourceStr = yaml.dump(merged).lines().collect(Collectors.toList());
-
-        return List.of("DISABLED");
+                    return merged;
+                })
+                .mapToInt(value -> value != null ? 0 : 1)
+                .sum();
 
     }
+
 }
