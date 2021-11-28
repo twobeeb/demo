@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
                 },
         versionProvider = KafkactlCommand.ConfigVersionProvider.class,
         mixinStandardHelpOptions = true)
-public class KafkactlCommand implements Callable<Integer> {
+public class KafkactlCommand implements Runnable {
 
     public static boolean VERBOSE = false;
     @Inject
@@ -57,13 +57,11 @@ public class KafkactlCommand implements Callable<Integer> {
         System.exit(exitCode);
     }
 
-    public Integer call() throws Exception {
+    public void run() {
         CommandLine cmd = new CommandLine(new KafkactlCommand());
         // Display help
         System.out.println(versionProvider.getVersion()[0]);
         cmd.usage(System.out);
-
-        return 0;
 
     }
 

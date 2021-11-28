@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @Command(name = "delete", description = "Delete a resource")
-public class DeleteSubcommand implements Callable<Integer> {
+public class DeleteSubcommand implements Runnable {
 
     @Inject
     public KafkactlConfig kafkactlConfig;
@@ -66,7 +66,7 @@ public class DeleteSubcommand implements Callable<Integer> {
     public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public Integer call() {
+    public void run() {
 
         if (dryRun) {
             System.out.println("Dry run execution");
@@ -136,7 +136,5 @@ public class DeleteSubcommand implements Callable<Integer> {
                 })
                 .mapToInt(value -> value ? 0 : 1)
                 .sum();
-
-        return errors > 0 ? 1 : 0;
     }
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "connectors", description = "Interact with connectors (Pause/Resume/Restart)")
-public class ConnectorsSubcommand implements Callable<Integer> {
+public class ConnectorsSubcommand implements Runnable {
 
     @CommandLine.ParentCommand
     public KafkactlCommand kafkactlCommand;
@@ -43,7 +43,7 @@ public class ConnectorsSubcommand implements Callable<Integer> {
     public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public Integer call() throws Exception {
+    public void run() {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
@@ -80,10 +80,10 @@ public class ConnectorsSubcommand implements Callable<Integer> {
 
         if (!changeConnectorResponseList.isEmpty()) {
             formatService.displayList("ChangeConnectorState", changeConnectorResponseList, "table");
-            return 0;
+
         }
 
-        return 1;
+
     }
 }
 

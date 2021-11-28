@@ -16,7 +16,7 @@ public class DemoCommandTest {
     public void testWithCommandLineOption() throws Exception {
         try (ApplicationContext ctx = ApplicationContext.run(Environment.CLI, Environment.TEST)) {
             String[] args = new String[] { "-v" };
-            PicocliRunner.call(KafkactlCommand.class, ctx, args);
+            PicocliRunner.run(KafkactlCommand.class, ctx, args);
 
             // kafkactl
             // assertTrue(baos.toString().contains("Hi!"));

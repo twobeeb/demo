@@ -13,7 +13,7 @@ import picocli.CommandLine.Parameters;
 import java.util.concurrent.Callable;
 
 @Command(name = "delete-records", description = "Deletes all records within a topic")
-public class DeleteRecordsSubcommand implements Callable<Integer> {
+public class DeleteRecordsSubcommand implements Runnable {
 
     @Inject
     public KafkactlConfig kafkactlConfig;
@@ -36,7 +36,7 @@ public class DeleteRecordsSubcommand implements Callable<Integer> {
     public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public Integer call() throws Exception {
+    public void run() {
         if (dryRun) {
             System.out.println("Dry run execution");
         }
@@ -51,7 +51,6 @@ public class DeleteRecordsSubcommand implements Callable<Integer> {
 
         formatService.displaySingle(resource, "yaml");
 
-        return 0;
     }
 
 }
