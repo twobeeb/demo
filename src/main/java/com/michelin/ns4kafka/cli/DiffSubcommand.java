@@ -136,7 +136,7 @@ public class DiffSubcommand implements Runnable {
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         Representer representer = new Representer();
         representer.addClassTag(Resource.class, Tag.MAP);
-        Yaml yaml = new Yaml(representer, options);
+        //Yaml yaml = new Yaml(representer, options);
 
         //List<String> oldResourceStr = live != null ? yaml.dump(live).lines().collect(Collectors.toList()) : List.of();
         //List<String> newResourceStr = yaml.dump(merged).lines().collect(Collectors.toList());
