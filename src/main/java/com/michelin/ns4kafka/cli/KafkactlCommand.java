@@ -45,13 +45,13 @@ public class KafkactlCommand implements Callable<Integer> {
         // 1. Setup config file in $HOME/.kafkactl/config.yml
         // 2. Setup config file anywhere and set KAFKACTL_CONFIG=/path/to/config.yml
         // 3. No file but environment variables instead
-        boolean hasConfig = System.getenv().keySet().stream().anyMatch(s -> s.startsWith("KAFKACTL_"));
+        /*boolean hasConfig = System.getenv().keySet().stream().anyMatch(s -> s.startsWith("KAFKACTL_"));
         if (!hasConfig) {
             System.setProperty("micronaut.config.files", System.getProperty("user.home") + "/.kafkactl/config.yml");
         }
         if (System.getenv("KAFKACTL_CONFIG") != null) {
             System.setProperty("micronaut.config.files", System.getenv("KAFKACTL_CONFIG"));
-        }
+        }*/
 
         int exitCode = PicocliRunner.execute(KafkactlCommand.class, args);
         System.exit(exitCode);
