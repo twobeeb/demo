@@ -111,14 +111,14 @@ public class DiffSubcommand implements Runnable {
                             .orElseThrow(); // already validated
                     Resource live = resourceService.getSingleResourceWithType(apiResource, namespace, resource.getMetadata().getName(), false);
                     HttpResponse<Resource> merged = resourceService.apply(apiResource, namespace, resource, true);
-                    if (merged != null && merged.getBody().isPresent()) {
+                    if (merged != null) {
                         List<String> uDiff = unifiedDiff(live, merged.body());
                         uDiff.forEach(System.out::println);
                         return 0;
                     }
                     return 1;
                 })
-                .mapToInt(value -> value != null ? 0 : 1)
+                .mapToInt(Integer::valueOf)
                 .sum();
     }
 
