@@ -111,18 +111,18 @@ public class DiffSubcommand implements Runnable {
                             .orElseThrow(); // already validated
                     Resource live = resourceService.getSingleResourceWithType(apiResource, namespace, resource.getMetadata().getName(), false);
                     HttpResponse<Resource> merged = resourceService.apply(apiResource, namespace, resource, true);
-                    /*if (merged != null) {
+                    if (merged != null) {
                         List<String> uDiff = unifiedDiff(live, merged.body());
                         uDiff.forEach(System.out::println);
                         return 0;
-                    }*/
+                    }
                     return 1;
                 })
                 .mapToInt(Integer::valueOf)
                 .sum();
     }
 
-    /*private List<String> unifiedDiff(Resource live, Resource merged) {
+    private List<String> unifiedDiff(Resource live, Resource merged) {
         // ignore status and timestamp for comparison
         if (live != null) {
             live.setStatus(null);
@@ -138,10 +138,10 @@ public class DiffSubcommand implements Runnable {
         representer.addClassTag(Resource.class, Tag.MAP);
         Yaml yaml = new Yaml(representer, options);
 
-        List<String> oldResourceStr = live != null ? yaml.dump(live).lines().collect(Collectors.toList()) : List.of();
-        List<String> newResourceStr = yaml.dump(merged).lines().collect(Collectors.toList());
+        //List<String> oldResourceStr = live != null ? yaml.dump(live).lines().collect(Collectors.toList()) : List.of();
+        //List<String> newResourceStr = yaml.dump(merged).lines().collect(Collectors.toList());
 
         return List.of("DISABLED");
 
-    }*/
+    }
 }
