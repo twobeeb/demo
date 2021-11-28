@@ -30,6 +30,7 @@ dependencies {
     implementation("io.micronaut:micronaut-validation")
 
     implementation("io.micronaut:micronaut-http-client")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     testImplementation("io.micronaut:micronaut-http-client")
 

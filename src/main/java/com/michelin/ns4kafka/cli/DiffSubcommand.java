@@ -1,5 +1,9 @@
 package com.michelin.ns4kafka.cli;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.michelin.ns4kafka.cli.models.ApiResource;
 import com.michelin.ns4kafka.cli.models.Resource;
 import com.michelin.ns4kafka.cli.services.ApiResourcesService;
@@ -131,15 +135,18 @@ public class DiffSubcommand implements Runnable {
         merged.setStatus(null);
         merged.getMetadata().setCreationTimestamp(null);
 
-        DumperOptions options = new DumperOptions();
-        options.setExplicitStart(true);
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        Representer representer = new Representer();
-        representer.addClassTag(Resource.class, Tag.MAP);
-        //Yaml yaml = new Yaml(representer, options);
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        //List<String> oldResourceStr = live != null ? yaml.dump(live).lines().collect(Collectors.toList()) : List.of();
-        //List<String> newResourceStr = yaml.dump(merged).lines().collect(Collectors.toList());
+        List<String> oldResourceStr = null;
+        List<String> newResourceStr = null;
+        try {
+            oldResourceStr = live != null ? mapper.writeValueAsString(live).lines().collect(Collectors.toList()) : List.of();
+            newResourceStr = mapper.writeValueAsString(merged).lines().collect(Collectors.toList());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            oldResourceStr=List.of();
+            newResourceStr=List.of();
+        }
 
         return List.of("DISABLED");
 
