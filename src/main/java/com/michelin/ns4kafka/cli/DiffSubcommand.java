@@ -1,8 +1,5 @@
 package com.michelin.ns4kafka.cli;
 
-import com.github.difflib.DiffUtils;
-import com.github.difflib.UnifiedDiffUtils;
-import com.github.difflib.patch.Patch;
 import com.michelin.ns4kafka.cli.models.ApiResource;
 import com.michelin.ns4kafka.cli.models.Resource;
 import com.michelin.ns4kafka.cli.services.ApiResourcesService;
@@ -139,11 +136,8 @@ public class DiffSubcommand implements Callable<Integer> {
 
         List<String> oldResourceStr = live != null ? yaml.dump(live).lines().collect(Collectors.toList()) : List.of();
         List<String> newResourceStr = yaml.dump(merged).lines().collect(Collectors.toList());
-        Patch<String> diff = DiffUtils.diff(oldResourceStr, newResourceStr);
-        return UnifiedDiffUtils.generateUnifiedDiff(
-                String.format("%s/%s-LIVE", merged.getKind(), merged.getMetadata().getName()),
-                String.format("%s/%s-MERGED", merged.getKind(), merged.getMetadata().getName()),
-                oldResourceStr, diff, 3);
+
+        return List.of("DISABLED");
 
     }
 }

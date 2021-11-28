@@ -10,7 +10,6 @@ import io.micronaut.core.naming.conventions.StringConvention;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import org.ocpsoft.prettytime.PrettyTime;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -152,15 +151,6 @@ public class FormatService {
                 String output = null;
                 JsonNode cell = node.at(this.jsonPointer);
                 switch (this.transform) {
-                    case "AGO":
-                        try {
-                            StdDateFormat sdf = new StdDateFormat();
-                            Date d = sdf.parse(cell.asText());
-                            output = new PrettyTime().format(d);
-                        } catch ( ParseException e) {
-                            output = cell.asText();
-                        }
-                        break;
                     case "PERIOD":
                         try {
                             long ms = Long.parseLong(cell.asText());
