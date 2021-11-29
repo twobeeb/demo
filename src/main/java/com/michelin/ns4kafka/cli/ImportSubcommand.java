@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @Command(name = "import", description = "Import resources already present on the Kafka Cluster in ns4kafka")
-public class ImportSubcommand implements Runnable {
+public class ImportSubcommand implements Callable<Integer> {
 
     @Inject
     public LoginService loginService;
@@ -42,7 +42,7 @@ public class ImportSubcommand implements Runnable {
     @CommandLine.Spec
     CommandLine.Model.CommandSpec commandSpec;
 
-    public void run() {
+    public Integer call() {
         
         if (dryRun) {
             System.out.println("Dry run execution");
@@ -62,6 +62,7 @@ public class ImportSubcommand implements Runnable {
 
         // 5.a display all resources by type
         resources.forEach((k, v) -> formatService.displayList(k.getKind(), v, "table"));
+        return 0;
 
     }
 

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 @Command(name = "reset-offsets", description = "Reset Consumer Group offsets")
-public class ResetOffsetsSubcommand implements Runnable {
+public class ResetOffsetsSubcommand implements Callable<Integer> {
 
     @Inject
     public LoginService loginService;
@@ -69,7 +69,7 @@ public class ResetOffsetsSubcommand implements Runnable {
     public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public void run() {
+    public Integer call() throws Exception {
 
         if (dryRun) {
             System.out.println("Dry run execution");
@@ -114,9 +114,9 @@ public class ResetOffsetsSubcommand implements Runnable {
         Resource resource = resourceService.resetOffsets(namespace, group, consumerGroupResetOffset, dryRun);
         if (resource != null) {
             formatService.displaySingle(resource, "yaml");
-
+            return 0;
         }
 
-
+        return 1;
     }
 }

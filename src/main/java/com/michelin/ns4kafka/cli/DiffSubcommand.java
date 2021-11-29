@@ -21,7 +21,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -29,7 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @Command(name = "diff", description = "Get differences between the new resources and the old resource")
-public class DiffSubcommand implements Runnable {
+public class DiffSubcommand implements Callable<Integer> {
 
     @Inject
     public LoginService loginService;
@@ -54,7 +53,7 @@ public class DiffSubcommand implements Runnable {
     public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public void run() {
+    public Integer call() throws Exception {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
@@ -62,12 +61,7 @@ public class DiffSubcommand implements Runnable {
         }
 
         // 0. Check STDIN and -f
-        boolean hasStdin = false;
-        try {
-            hasStdin = System.in.available() > 0;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        boolean hasStdin = System.in.available() > 0;
         // If we have none or both stdin and File set, we stop
         if (hasStdin == file.isPresent()) {
             throw new CommandLine.ParameterException(commandSpec.commandLine(), "Required one of -f or stdin");
@@ -125,6 +119,7 @@ public class DiffSubcommand implements Runnable {
                 })
                 .mapToInt(Integer::valueOf)
                 .sum();
+        return errors > 0 ? 1 : 0;
     }
 
     private List<String> unifiedDiff(Resource live, Resource merged) {

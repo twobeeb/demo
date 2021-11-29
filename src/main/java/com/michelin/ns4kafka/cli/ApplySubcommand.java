@@ -13,7 +13,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -21,7 +20,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @Command(name = "apply", description = "Create or update a resource")
-public class ApplySubcommand implements Runnable {
+public class ApplySubcommand implements Callable<Integer> {
 
     @Inject
     public LoginService loginService;
@@ -48,7 +47,7 @@ public class ApplySubcommand implements Runnable {
     public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public void run() {
+    public Integer call() throws Exception {
 
         if (dryRun) {
             System.out.println("Dry run execution");
@@ -60,12 +59,7 @@ public class ApplySubcommand implements Runnable {
         }
 
         // 0. Check STDIN and -f
-        boolean hasStdin = false;
-        try {
-            hasStdin = System.in.available() > 0;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        boolean hasStdin = System.in.available() > 0;
         // If we have none or both stdin and File set, we stop
         if (hasStdin == file.isPresent()) {
             throw new CommandLine.ParameterException(commandSpec.commandLine(), "Required one of -f or stdin");
@@ -128,6 +122,7 @@ public class ApplySubcommand implements Runnable {
                 .mapToInt(value -> value != null ? 0 : 1)
                 .sum();
 
+        return errors > 0 ? 1 : 0;
     }
 
 }

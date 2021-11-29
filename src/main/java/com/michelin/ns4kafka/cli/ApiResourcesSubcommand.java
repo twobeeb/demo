@@ -7,12 +7,12 @@ import picocli.CommandLine;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "api-resources", description = "Print the supported API resources on the server")
-public class ApiResourcesSubcommand implements Runnable {
+public class ApiResourcesSubcommand implements Callable<Integer> {
     @Inject
     public ApiResourcesService apiResourcesService;
 
     @Override
-    public void run() {
+    public Integer call() {
         CommandLine.Help.TextTable tt = CommandLine.Help.TextTable.forColumns(
                 CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.AUTO),
                 new CommandLine.Help.Column[]
@@ -26,5 +26,6 @@ public class ApiResourcesSubcommand implements Runnable {
                 tt.addRowValues(rd.getKind(), String.join(",", rd.getNames()), String.valueOf(rd.isNamespaced()))
         );
         System.out.println(tt);
+        return 0;
     }
 }

@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
                         ConnectorsSubcommand.class
                 },
         mixinStandardHelpOptions = true)
-public class KafkactlCommand implements Runnable {
+public class KafkactlCommand implements Callable<Integer> {
 
     public static boolean VERBOSE = false;
 
@@ -54,10 +54,12 @@ public class KafkactlCommand implements Runnable {
         System.exit(exitCode);
     }
 
-    public void run() {
+    public Integer call() throws Exception {
         CommandLine cmd = new CommandLine(new KafkactlCommand());
         // Display help
         cmd.usage(System.out);
+
+        return 0;
 
     }
 

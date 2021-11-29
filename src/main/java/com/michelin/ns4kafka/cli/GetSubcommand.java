@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
         "  kafkactl get all : Display all resources",
         "Parameters: "
 })
-public class GetSubcommand implements Runnable {
+public class GetSubcommand implements Callable<Integer> {
 
     @Inject
     public NamespacedResourceClient namespacedClient;
@@ -60,7 +60,7 @@ public class GetSubcommand implements Runnable {
     CommandLine.Model.CommandSpec commandSpec;
 
     @Override
-    public void run() {
+    public Integer call() throws Exception {
 
         // 1. Authent
         boolean authenticated = loginService.doAuthenticate();
@@ -100,6 +100,7 @@ public class GetSubcommand implements Runnable {
 
         }
 
+        return 0;
     }
 
     private void validateOutput() {
