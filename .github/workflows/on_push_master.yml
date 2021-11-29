@@ -24,7 +24,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Native Image for CLI
-        run: ./gradlew :nativeCompile
+        run: ./gradlew :nativeImage
   build-windows:
     runs-on: windows-latest
     environment: Build
@@ -49,5 +49,5 @@ jobs:
       - name: Native Image for CLI
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-          gradlew.bat :nativeCompile
+          gradlew.bat :nativeImage
         shell: cmd
