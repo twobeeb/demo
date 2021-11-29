@@ -28,7 +28,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: native-image-linux
-          path: ${{ github.workspace }}/build/native-image/*
+          path: ${{ github.workspace }}/build/native/*
   build-windows:
     runs-on: windows-latest
     environment: Build
@@ -58,4 +58,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: native-image-windows
-          path: ${{ github.workspace }}/build/native-image/*
+          path: ${{ github.workspace }}/build/native/*
