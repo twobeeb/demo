@@ -39,14 +39,15 @@ public class ConnectorsSubcommand implements Runnable {
     @Inject
     public FormatService formatService;
 
-    
+    @CommandLine.Spec
+    public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
     public void run() {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new UnsupportedOperationException( "Login failed");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
         }
 
         String namespace = kafkactlCommand.optionalNamespace.orElse(kafkactlConfig.getCurrentNamespace());
@@ -54,7 +55,7 @@ public class ConnectorsSubcommand implements Runnable {
         // specific case ALL
         if(connectors.stream().anyMatch(s -> s.equalsIgnoreCase("ALL"))){
             ApiResource connectType = apiResourcesService.getResourceDefinitionFromKind("Connector")
-                    .orElseThrow(() -> new UnsupportedOperationException( "`Connector` Kind not found in ApiResources Service"));
+                    .orElseThrow(() -> new CommandLine.ParameterException(commandSpec.commandLine(), "`Connector` Kind not found in ApiResources Service"));
             connectors = resourceService.listResourcesWithType(connectType, namespace)
                     .stream()
                     .map(resource -> resource.getMetadata().getName())

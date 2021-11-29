@@ -62,7 +62,8 @@ public class DeleteSubcommand implements Runnable {
     @Option(names = {"--dry-run"}, description = "Does not persist operation. Validate only")
     public boolean dryRun;
 
-    
+    @CommandLine.Spec
+    public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
     public void run() {
@@ -73,7 +74,7 @@ public class DeleteSubcommand implements Runnable {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new UnsupportedOperationException( "Login failed");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
         }
 
         String namespace = kafkactlCommand.optionalNamespace.orElse(kafkactlConfig.getCurrentNamespace());
@@ -84,14 +85,14 @@ public class DeleteSubcommand implements Runnable {
             // 1. list all files to process
             List<File> yamlFiles = fileService.computeYamlFileList(config.fileConfig.file.get(), config.fileConfig.recursive);
             if (yamlFiles.isEmpty()) {
-                throw new UnsupportedOperationException( "Could not find yaml/yml files in " + config.fileConfig.file.get().getName());
+                throw new CommandLine.ParameterException(commandSpec.commandLine(), "Could not find yaml/yml files in " + config.fileConfig.file.get().getName());
             }
             // 2 load each files
             resources = fileService.parseResourceListFromFiles(yamlFiles);
         } else {
             Optional<ApiResource> optionalApiResource = apiResourcesService.getResourceDefinitionFromCommandName(config.nameConfig.resourceType);
             if (optionalApiResource.isEmpty()) {
-                throw new UnsupportedOperationException( "The server doesn't have resource type [" + config.nameConfig.resourceType + "]");
+                throw new CommandLine.ParameterException(commandSpec.commandLine(), "The server doesn't have resource type [" + config.nameConfig.resourceType + "]");
             }
             // Generate a single resource with minimum details from input
             resources = List.of(Resource.builder()
@@ -107,7 +108,7 @@ public class DeleteSubcommand implements Runnable {
         List<Resource> invalidResources = apiResourcesService.validateResourceTypes(resources);
         if (!invalidResources.isEmpty()) {
             String invalid = String.join(", ", invalidResources.stream().map(Resource::getKind).distinct().collect(Collectors.toList()));
-            throw new UnsupportedOperationException( "The server doesn't have resource type [" + invalid + "]");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "The server doesn't have resource type [" + invalid + "]");
         }
 
         // 4. validate namespace mismatch
@@ -116,7 +117,7 @@ public class DeleteSubcommand implements Runnable {
                 .collect(Collectors.toList());
         if (!nsMismatch.isEmpty()) {
             String invalid = String.join(", ", nsMismatch.stream().map(resource -> resource.getKind() + "/" + resource.getMetadata().getName()).distinct().collect(Collectors.toList()));
-            throw new UnsupportedOperationException( "Namespace mismatch between kafkactl and yaml document [" + invalid + "]");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Namespace mismatch between kafkactl and yaml document [" + invalid + "]");
         }
         List<ApiResource> apiResources = apiResourcesService.getListResourceDefinition();
 

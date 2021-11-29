@@ -65,7 +65,7 @@ public class GetSubcommand implements Runnable {
         // 1. Authent
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new UnsupportedOperationException( "Login failed");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
         }
 
         // 2. validate resourceType + custom type ALL
@@ -104,7 +104,7 @@ public class GetSubcommand implements Runnable {
 
     private void validateOutput() {
         if (!List.of("table", "yaml").contains(output)) {
-            throw new UnsupportedOperationException( "Invalid value " + output + " for option -o");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Invalid value " + output + " for option -o");
         }
     }
 
@@ -121,7 +121,7 @@ public class GetSubcommand implements Runnable {
         if (optionalApiResource.isPresent()) {
             return List.of(optionalApiResource.get());
         }
-        throw new UnsupportedOperationException( "The server doesn't have resource type " + resourceType);
+        throw new CommandLine.ParameterException(commandSpec.commandLine(), "The server doesn't have resource type " + resourceType);
 
     }
 

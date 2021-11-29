@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Command(name = "apply", description = "Create or update a resource")
@@ -45,7 +44,8 @@ public class ApplySubcommand implements Runnable {
     @Option(names = {"--dry-run"}, description = "Does not persist resources. Validate only")
     public boolean dryRun;
 
-    
+    @CommandLine.Spec
+    public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
     public void run() {
@@ -56,8 +56,7 @@ public class ApplySubcommand implements Runnable {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            
-            throw new UnsupportedOperationException("Login failed");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
         }
 
         // 0. Check STDIN and -f
@@ -69,7 +68,7 @@ public class ApplySubcommand implements Runnable {
         }
         // If we have none or both stdin and File set, we stop
         if (hasStdin == file.isPresent()) {
-            throw new UnsupportedOperationException( "Required one of -f or stdin");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Required one of -f or stdin");
         }
 
         List<Resource> resources;
@@ -78,7 +77,7 @@ public class ApplySubcommand implements Runnable {
             // 1. list all files to process
             List<File> yamlFiles = fileService.computeYamlFileList(file.get(), recursive);
             if (yamlFiles.isEmpty()) {
-                throw new UnsupportedOperationException( "Could not find yaml/yml files in " + file.get().getName());
+                throw new CommandLine.ParameterException(commandSpec.commandLine(), "Could not find yaml/yml files in " + file.get().getName());
             }
             // 2 load each files
             resources = fileService.parseResourceListFromFiles(yamlFiles);
@@ -93,7 +92,7 @@ public class ApplySubcommand implements Runnable {
         List<Resource> invalidResources = apiResourcesService.validateResourceTypes(resources);
         if (!invalidResources.isEmpty()) {
             String invalid = String.join(", ", invalidResources.stream().map(Resource::getKind).distinct().collect(Collectors.toList()));
-            throw new UnsupportedOperationException( "The server doesn't have resource type [" + invalid + "]");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "The server doesn't have resource type [" + invalid + "]");
         }
         // 4. validate namespace mismatch
         String namespace = kafkactlCommand.optionalNamespace.orElse(kafkactlConfig.getCurrentNamespace());
@@ -102,7 +101,7 @@ public class ApplySubcommand implements Runnable {
                 .collect(Collectors.toList());
         if (!nsMismatch.isEmpty()) {
             String invalid = String.join(", ", nsMismatch.stream().map(resource -> resource.getKind() + "/" + resource.getMetadata().getName()).distinct().collect(Collectors.toList()));
-            throw new UnsupportedOperationException( "Namespace mismatch between kafkactl and yaml document [" + invalid + "]");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Namespace mismatch between kafkactl and yaml document [" + invalid + "]");
         }
         List<ApiResource> apiResources = apiResourcesService.getListResourceDefinition();
 

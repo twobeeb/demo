@@ -65,7 +65,8 @@ public class ResetOffsetsSubcommand implements Runnable {
         public Duration duration;
     }
 
-    
+    @CommandLine.Spec
+    public CommandLine.Model.CommandSpec commandSpec;
 
     @Override
     public void run() {
@@ -76,7 +77,7 @@ public class ResetOffsetsSubcommand implements Runnable {
 
         boolean authenticated = loginService.doAuthenticate();
         if (!authenticated) {
-            throw new UnsupportedOperationException( "Login failed");
+            throw new CommandLine.ParameterException(commandSpec.commandLine(), "Login failed");
         }
 
         String namespace = kafkactlCommand.optionalNamespace.orElse(kafkactlConfig.getCurrentNamespace());
