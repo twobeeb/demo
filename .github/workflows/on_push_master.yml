@@ -25,6 +25,10 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Native Image for CLI
         run: ./gradlew :nativeCompile
+      - uses: actions/upload-artifact@v2
+        with:
+          name: native-image-linux
+          path: ${{ github.workspace }}/build/native-image/*
   build-windows:
     runs-on: windows-latest
     environment: Build
@@ -51,3 +55,7 @@ jobs:
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
           gradlew.bat :nativeCompile
         shell: cmd
+      - uses: actions/upload-artifact@v2
+        with:
+          name: native-image-windows
+          path: ${{ github.workspace }}/build/native-image/*
