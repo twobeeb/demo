@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.patch.Patch;
 import com.michelin.ns4kafka.cli.models.ApiResource;
 import com.michelin.ns4kafka.cli.models.Resource;
 import com.michelin.ns4kafka.cli.services.ApiResourcesService;
@@ -110,14 +113,14 @@ public class DiffSubcommand implements Callable<Integer> {
                             .orElseThrow(); // already validated
                     Resource live = resourceService.getSingleResourceWithType(apiResource, namespace, resource.getMetadata().getName(), false);
                     HttpResponse<Resource> merged = resourceService.apply(apiResource, namespace, resource, true);
-                    if (merged != null) {
+                    if (merged != null && merged.getBody().isPresent()) {
                         List<String> uDiff = unifiedDiff(live, merged.body());
                         uDiff.forEach(System.out::println);
                         return 0;
                     }
                     return 1;
                 })
-                .mapToInt(Integer::valueOf)
+                .mapToInt(value -> value != null ? 0 : 1)
                 .sum();
         return errors > 0 ? 1 : 0;
     }
@@ -139,12 +142,15 @@ public class DiffSubcommand implements Callable<Integer> {
             oldResourceStr = live != null ? mapper.writeValueAsString(live).lines().collect(Collectors.toList()) : List.of();
             newResourceStr = mapper.writeValueAsString(merged).lines().collect(Collectors.toList());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
             oldResourceStr=List.of();
             newResourceStr=List.of();
         }
 
-        return List.of("DISABLED");
+        Patch<String> diff = DiffUtils.diff(oldResourceStr, newResourceStr);
+        return UnifiedDiffUtils.generateUnifiedDiff(
+                String.format("%s/%s-LIVE", merged.getKind(), merged.getMetadata().getName()),
+                String.format("%s/%s-MERGED", merged.getKind(), merged.getMetadata().getName()),
+                oldResourceStr, diff, 3);
 
     }
 }
